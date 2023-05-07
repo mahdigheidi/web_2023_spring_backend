@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  nginx_webserver:
+    image: nginx:latest
+    container_name: nginx_webserver
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/:/etc/nginx/
+      - ./certs/nginx-selfsigned.crt:/etc/ssl/certs/localhost.crt
+      - ./certs/nginx-selfsigned.key:/etc/ssl/certs/localhost.key
+
+  redis_cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
+  
+  # gateway:
+  #   build:
+  
+  postgres_db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+    volumes: 
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db: 
+  cache: 
