@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "pb/v1";
+
+message ReqPGRequest {
+    string nonce = 1;
+    int32 message_id = 2;
+}
+
+message ReqPGResponse {
+    string nonce = 1;
+    string server_nonce = 2;
+    int32 message_id = 3;
+    int64 p = 4;
+    int64 g = 5;
+}
+
+message ReqDHParamsRequest {
+    string nonce = 1;
+    string server_nonce = 2;
+    int32 message_id = 3;
+    int32 a = 4;
+}
+
+message ReqDHParamsResponse {
+    string nonce = 1;
+    string server_nonce = 2;
+    int32 message_id = 3;
+    int32 b = 4;
+}
+
+service Authentication
+{
+    rpc ReqPG(ReqPGRequest) returns (ReqPGResponse) {}
+    rpc ReqDHParams(ReqDHParamsRequest) returns (ReqDHParamsResponse) {}
+}

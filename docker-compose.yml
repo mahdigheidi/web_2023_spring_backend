@@ -13,6 +13,18 @@ services:
       - ./certs/nginx-selfsigned.crt:/etc/ssl/certs/localhost.crt
       - ./certs/nginx-selfsigned.key:/etc/ssl/certs/localhost.key
 
+  gateway:
+    build:
+      context: ./gateway/
+  
+  authentication:
+    build:
+      context: ./auth/
+  
+  business_logic:
+    build:
+      context: ./biz/
+
   redis_cache:
     image: redis:6.2-alpine
     restart: always
@@ -21,9 +33,6 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
     volumes: 
       - cache:/data
-  
-  # gateway:
-  #   build:
   
   postgres_db:
     image: postgres:14.1-alpine

@@ -1,4 +1,4 @@
-module web_server_2023.com/auth
+module web_server_2023.com/biz
 
 go 1.18
 
