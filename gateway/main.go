@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	authPb "../web-server-2023.com/auth/pb"
-	bizPb "web-server-2023.com/biz/pb"
+	authPb "webserver/gateway/pb/auth"
+	bizPb "webserver/gateway/pb/biz"
 
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
@@ -18,7 +18,6 @@ func main() {
 		log.Fatalf("failed to connect: %v", authErr)
 	}
 	defer authConn.Close()
-
 	authClient := authPb.NewAuthenticationClient(authConn)
 
 	bizConn, bizErr := grpc.Dial("localhost:5062", grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -39,7 +38,7 @@ func main() {
 		response, err := authClient.ReqPG(context.Background(), &authPb.ReqPGRequest{Nonce: nonce, MessageId: message_id})
 		c.JSON(200, gin.H{
 			"response": response,
-			"err": err,
+			"err":      err,
 		})
 	})
 
@@ -51,15 +50,15 @@ func main() {
 		message_id = 4
 		a = 19
 		response, err := authClient.ReqDHParams(context.Background(),
-												&authPb.ReqDHParamsRequest{
-																			Nonce: nonce,
-																			ServerNonce: server_nonce,
-																			MessageId: message_id,
-																			A: a,
-																		})
+			&authPb.ReqDHParamsRequest{
+				Nonce:       nonce,
+				ServerNonce: server_nonce,
+				MessageId:   message_id,
+				A:           a,
+			})
 		c.JSON(200, gin.H{
 			"response": response,
-			"err": err,
+			"err":      err,
 		})
 	})
 
@@ -70,7 +69,7 @@ func main() {
 		response, err := bizClient.GetUsers(context.Background(), &bizPb.GetUsersRequest{UserId: user_id, AuthKey: auth_key, MessageId: message_id})
 		c.JSON(200, gin.H{
 			"response": response,
-			"err": err,
+			"err":      err,
 		})
 	})
 
@@ -80,7 +79,7 @@ func main() {
 		response, err := bizClient.GetUsersWithSQLInject(context.Background(), &bizPb.GetUsersWithSQLInjectRequest{UserId: user_id, AuthKey: auth_key, MessageId: message_id})
 		c.JSON(200, gin.H{
 			"response": response,
-			"err": err,
+			"err":      err,
 		})
 	})
 

@@ -4,9 +4,8 @@ import (
 	"context"
 	"log"
 	"net"
-
-	pb "../proto/biz_pb"
-
+	
+	pb "webserver/biz/pb"
 	"google.golang.org/grpc"
 )
 

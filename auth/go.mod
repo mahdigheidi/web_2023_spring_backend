@@ -1,4 +1,4 @@
-module web-server-2023.com/auth
+module webserver/auth
 
 go 1.18
 
