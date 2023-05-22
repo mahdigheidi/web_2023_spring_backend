@@ -9,4 +9,7 @@ This command generates the key & cert needed by nginx to add the https directory
 
 ### To generate the proto go files cd into the service folder & use the commands below
 `go install google.golang.org/protobuf/cmd/protoc-gen-go@latest`
-`protoc -I=. --go_out=. ./services.proto`
+`protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative services.proto`
+
+For more information to setup a gRPC server using go see the link below:
+https://www.practical-go-lessons.com/post/how-to-create-a-grpc-server-with-golang-ccdm795s4r5c70i1kacg
