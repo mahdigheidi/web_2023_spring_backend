@@ -29,3 +29,7 @@ CREATE TABLE users (
 	created_at        timestamp NOT NULL DEFAULT NOW()
 );
 </code>
+
+### Running the project:
+In order to run the project, simply run `docker-compose up -d --build`
+All services will be built and run on the specified endpoints
