@@ -4,7 +4,7 @@
 // - protoc             v3.12.4
 // source: biz.proto
 
-package proto
+package biz
 
 import (
 	context "context"

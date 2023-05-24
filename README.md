@@ -13,3 +13,19 @@ This command generates the key & cert needed by nginx to add the https directory
 
 For more information to setup a gRPC server using go see the link below:
 https://www.practical-go-lessons.com/post/how-to-create-a-grpc-server-with-golang-ccdm795s4r5c70i1kacg
+
+### The table USERS was created with the following raw SQL
+<code>
+CREATE TYPE sex_type AS ENUM('male', 'female');
+</code>
+
+<code>
+CREATE TABLE users (
+	name 		varchar(60) NOT NULL,
+	family	 	varchar(60) NOT NULL,
+	id 			int PRIMARY KEY,
+	age 		int,
+	sex 		sex_type,
+	created_at        timestamp NOT NULL DEFAULT NOW()
+);
+</code>

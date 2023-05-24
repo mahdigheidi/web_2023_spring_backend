@@ -16,6 +16,9 @@ services:
   gateway:
     build:
       context: ./gateway/
+    depends_on:
+      - authentication
+      - business_logic
   
   authentication:
     build:
@@ -24,6 +27,8 @@ services:
   business_logic:
     build:
       context: ./biz/
+    depends_on:
+      - postgres_db
 
   redis_cache:
     image: redis:6.2-alpine

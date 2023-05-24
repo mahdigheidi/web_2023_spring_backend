@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"strconv"
 
 	authPb "webserver/gateway/pb/auth"
 	bizPb "webserver/gateway/pb/biz"
@@ -13,14 +14,14 @@ import (
 )
 
 func main() {
-	authConn, authErr := grpc.Dial("localhost:5052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	authConn, authErr := grpc.Dial("authentication:5052", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if authErr != nil {
 		log.Fatalf("failed to connect: %v", authErr)
 	}
 	defer authConn.Close()
 	authClient := authPb.NewAuthenticationClient(authConn)
 
-	bizConn, bizErr := grpc.Dial("localhost:5062", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	bizConn, bizErr := grpc.Dial("business_logic:5062", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if bizErr != nil {
 		log.Fatalf("failed to connect to business services: %v", bizErr)
 	}
@@ -31,30 +32,30 @@ func main() {
 
 	// Auth services
 	r.GET("/req_pq", func(c *gin.Context) {
-		var nonce string
-		var message_id int32
-		nonce = "ABCDEFGHIJ0123456789"
-		message_id = 2
-		response, err := authClient.ReqPG(context.Background(), &authPb.ReqPGRequest{Nonce: nonce, MessageId: message_id})
-		c.JSON(200, gin.H{
-			"response": response,
-			"err":      err,
-		})
+		nonce := c.Query("nonce")
+		message_id, err := strconv.Atoi(c.Query("message_id"))
+		if err != nil {
+			c.Error(err)
+		} else {
+			response, err := authClient.ReqPG(context.Background(), &authPb.ReqPGRequest{Nonce: nonce, MessageId: int32(message_id)})
+			c.JSON(200, gin.H{
+				"response": response,
+				"err":      err,
+			})
+		}
 	})
 
-	r.GET("/req_DH_params", func(c *gin.Context) {
-		var nonce, server_nonce string
-		var message_id, a int32
-		nonce = "ABCDEFGHIJ0123456789"
-		server_nonce = "ABCDEFGHIJ0123456789"
-		message_id = 4
-		a = 19
+	r.GET("/req_dh_params", func(c *gin.Context) {
+		nonce := c.Query("nonce")
+		server_nonce := c.Query("server_nonce")
+		message_id, _ := strconv.Atoi(c.Query("message_id"))
+		a, _ := strconv.Atoi(c.Query("a"))
 		response, err := authClient.ReqDHParams(context.Background(),
 			&authPb.ReqDHParamsRequest{
 				Nonce:       nonce,
 				ServerNonce: server_nonce,
-				MessageId:   message_id,
-				A:           a,
+				MessageId:   int32(message_id),
+				A:           int32(a),
 			})
 		c.JSON(200, gin.H{
 			"response": response,
@@ -64,9 +65,10 @@ func main() {
 
 	// Biz services
 	r.GET("/get_users", func(c *gin.Context) {
-		var user_id, message_id int32
-		var auth_key string
-		response, err := bizClient.GetUsers(context.Background(), &bizPb.GetUsersRequest{UserId: user_id, AuthKey: auth_key, MessageId: message_id})
+		user_id, _ := strconv.Atoi(c.Query("user_id"))
+		message_id, _ := strconv.Atoi(c.Query("message_id"))
+		auth_key := c.Query("auth_key")
+		response, err := bizClient.GetUsers(context.Background(), &bizPb.GetUsersRequest{UserId: int32(user_id), AuthKey: auth_key, MessageId: int32(message_id)})
 		c.JSON(200, gin.H{
 			"response": response,
 			"err":      err,
@@ -74,9 +76,10 @@ func main() {
 	})
 
 	r.GET("/get_users_with_sql_inject", func(c *gin.Context) {
-		var message_id int32
-		var user_id, auth_key string
-		response, err := bizClient.GetUsersWithSQLInject(context.Background(), &bizPb.GetUsersWithSQLInjectRequest{UserId: user_id, AuthKey: auth_key, MessageId: message_id})
+		user_id := c.Query("user_id")
+		message_id, _ := strconv.Atoi(c.Query("message_id"))
+		auth_key := c.Query("auth_key")
+		response, err := bizClient.GetUsersWithSQLInject(context.Background(), &bizPb.GetUsersWithSQLInjectRequest{UserId: user_id, AuthKey: auth_key, MessageId: int32(message_id)})
 		c.JSON(200, gin.H{
 			"response": response,
 			"err":      err,
