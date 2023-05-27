@@ -61,6 +61,7 @@ services:
     ports:
       - 5432:5432
     volumes: 
+      - ./postgresql.conf:/var/lib/postgresql/data/postgresql.conf
       - db:/var/lib/postgresql/data
 
 volumes:

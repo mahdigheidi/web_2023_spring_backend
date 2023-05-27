@@ -33,3 +33,7 @@ CREATE TABLE users (
 ### Running the project:
 In order to run the project, simply run `docker-compose up -d --build`
 All services will be built and run on the specified endpoints
+
+### Services' load test
+To load test the services, you should cd into the load_test directory and execute `locust`,
+then you can open `localhost:8089` and start load testing implemented services

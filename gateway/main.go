@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	authPb "webserver/gateway/pb/auth"
 	bizPb "webserver/gateway/pb/biz"
@@ -93,14 +94,16 @@ func main() {
 		return
 	}
 
-	authConn, authErr := grpc.Dial("authentication:5052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	authCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	authConn, authErr := grpc.DialContext(authCtx, "authentication:5052", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if authErr != nil {
 		log.Fatalf("failed to connect: %v", authErr)
 	}
 	defer authConn.Close()
 	authClient := authPb.NewAuthenticationClient(authConn)
 
-	bizConn, bizErr := grpc.Dial("business_logic:5062", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	bizCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	bizConn, bizErr := grpc.DialContext(bizCtx, "business_logic:5062", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if bizErr != nil {
 		log.Fatalf("failed to connect to business services: %v", bizErr)
 	}

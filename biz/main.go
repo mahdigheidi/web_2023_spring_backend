@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"net"
 
@@ -43,7 +42,6 @@ func (s *businessServer) GetUsers(ctx context.Context, req *pb.GetUsersRequest) 
 	defer rows.Close()
 	for rows.Next() {
 		var user User
-		fmt.Println(rows.Columns())
 
 		_ = rows.Scan(&user.id, &user.name, &user.family, &user.age, &user.sex, &user.created_at)
 
