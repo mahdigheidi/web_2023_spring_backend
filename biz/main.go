@@ -7,8 +7,6 @@ import (
 	"log"
 	"net"
 
-	// "time"
-
 	pb "webserver/biz/pb"
 
 	"google.golang.org/grpc"
@@ -38,12 +36,9 @@ func (s *businessServer) GetUsers(ctx context.Context, req *pb.GetUsersRequest) 
 
 	if user_id > 0 {
 		rows, _ = db.Query("SELECT id, name, family, age, sex, created_at FROM users where id = $1", user_id)
-		fmt.Println("getting an specific user")
 	} else {
 		rows, _ = db.Query("SELECT id, name, family, age, sex, created_at FROM users limit 100")
-		fmt.Println("in 100 users")
 	}
-	print(rows)
 	pbUsers := []*pb.User{}
 	defer rows.Close()
 	for rows.Next() {
@@ -52,8 +47,6 @@ func (s *businessServer) GetUsers(ctx context.Context, req *pb.GetUsersRequest) 
 
 		_ = rows.Scan(&user.id, &user.name, &user.family, &user.age, &user.sex, &user.created_at)
 
-		// fmt.Printf("%s %s %d %d %s %s\n", user.name, user.family, user.id, user.age, user.sex, user.created_at)
-		// fmt.Println("here")
 		pbUser := &pb.User{Name: user.name, Family: user.family, Id: user.id, Age: user.age, Sex: user.sex, CreatedAt: user.created_at}
 		pbUsers = append(pbUsers, pbUser)
 	}

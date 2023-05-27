@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	redis "github.com/redis/go-redis/v9"
+	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -40,6 +42,42 @@ func isAuthenticated() gin.HandlerFunc {
 		}
 	}
 }
+
+func Throttle(maxEventsPerSec int, maxBurstSize int) gin.HandlerFunc {
+	limiter := rate.NewLimiter(rate.Limit(maxEventsPerSec), maxBurstSize)
+
+	return func(context *gin.Context) {
+		if limiter.Allow() {
+			context.Next()
+			return
+		}
+		context.Error(errors.New("limit exceeded"))
+		context.AbortWithStatus(http.StatusTooManyRequests)
+	}
+}
+
+// func Blacklist(whitelist map[string]bool) func(http.Handler) http.Handler {
+//     f := func(h http.Handler) http.Handler {
+//         fn := func(w http.ResponseWriter, r *http.Request) {
+//             // Get IP of this request
+//             ip := doSomething()
+
+//             // If the IP isn't in the whitelist, forbid the request.
+//             if !whitelist[ip] {
+//                 w.Header().Set("Content-Type", "text/plain")
+//                 w.WriteHeader(http.StatusForbidden)
+//                 w.Write([]byte("."))
+//                 return
+//             }
+
+//             h.ServeHTTP(w, r)
+//         }
+
+//         return http.HandlerFunc(fn)
+//     }
+
+//     return f
+// }
 
 func main() {
 
@@ -70,10 +108,14 @@ func main() {
 	bizClient := bizPb.NewBusinessClient(bizConn)
 
 	r := gin.Default()
+	// r.Use(Blacklist())
 
 	// Auth services
 	auth := r.Group("/auth")
 	{
+		maxEventsPerSec := 1000
+		maxBurstSize := 50
+		auth.Use(Throttle(maxEventsPerSec, maxBurstSize))
 		auth.GET("/req_pq", func(c *gin.Context) {
 			nonce := c.Query("nonce")
 			message_id, err := strconv.Atoi(c.Query("message_id"))
