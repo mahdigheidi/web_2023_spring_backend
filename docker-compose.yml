@@ -1,6 +1,16 @@
-version: '3'
+version: '3.8'
 
 services:
+
+  redis_cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
+
   nginx_webserver:
     image: nginx:latest
     container_name: nginx_webserver
@@ -12,32 +22,35 @@ services:
       - ./nginx/:/etc/nginx/
       - ./certs/nginx-selfsigned.crt:/etc/ssl/certs/localhost.crt
       - ./certs/nginx-selfsigned.key:/etc/ssl/certs/localhost.key
+    depends_on:
+      - gateway
 
   gateway:
     build:
       context: ./gateway/
     depends_on:
+      - redis_cache
       - authentication
       - business_logic
+    restart: always
+    environment:
+      - REDIS_PASS=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
   
   authentication:
     build:
       context: ./auth/
+    depends_on:
+      - redis_cache
+    environment:
+      - REDIS_PASS=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    
   
   business_logic:
     build:
       context: ./biz/
     depends_on:
+      - redis_cache
       - postgres_db
-
-  redis_cache:
-    image: redis:6.2-alpine
-    restart: always
-    ports:
-      - 6379:6379
-    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-    volumes: 
-      - cache:/data
   
   postgres_db:
     image: postgres:14.1-alpine

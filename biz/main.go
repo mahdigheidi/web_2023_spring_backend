@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+
 	// "time"
 
 	pb "webserver/biz/pb"
@@ -18,20 +19,23 @@ type businessServer struct {
 }
 
 type User struct {
-	id int32
-	name string
-	family string
-	age int32
-	sex string
+	id         int32
+	name       string
+	family     string
+	age        int32
+	sex        string
 	created_at string
 }
 
 var db = connectToDB()
 
 func (s *businessServer) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (*pb.GetUsersResponse, error) {
+	// user_id is the input given by the user, so it should be cleaned and processed
+	// since the user_id is an integer in this case the only validation we need
+	// is to make sure the user_id is an integer
 	user_id := req.UserId
 	var rows *sql.Rows
-		
+
 	if user_id > 0 {
 		rows, _ = db.Query("SELECT id, name, family, age, sex, created_at FROM users where id = $1", user_id)
 		fmt.Println("getting an specific user")
@@ -45,10 +49,10 @@ func (s *businessServer) GetUsers(ctx context.Context, req *pb.GetUsersRequest) 
 	for rows.Next() {
 		var user User
 		fmt.Println(rows.Columns())
-	
+
 		_ = rows.Scan(&user.id, &user.name, &user.family, &user.age, &user.sex, &user.created_at)
- 
-    	// fmt.Printf("%s %s %d %d %s %s\n", user.name, user.family, user.id, user.age, user.sex, user.created_at)
+
+		// fmt.Printf("%s %s %d %d %s %s\n", user.name, user.family, user.id, user.age, user.sex, user.created_at)
 		// fmt.Println("here")
 		pbUser := &pb.User{Name: user.name, Family: user.family, Id: user.id, Age: user.age, Sex: user.sex, CreatedAt: user.created_at}
 		pbUsers = append(pbUsers, pbUser)
