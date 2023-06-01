@@ -53,7 +53,7 @@ func Throttle(maxEventsPerSec int, maxBurstSize int) gin.HandlerFunc {
 			return
 		}
 		badClient := context.ClientIP()
-		redisClient.Set(redisCtx, badClient, "blocked", 100*time.Hour)
+		redisClient.Set(redisCtx, badClient, "blocked", 24*time.Hour)
 		context.Error(errors.New("limit exceeded"))
 		context.AbortWithStatus(http.StatusTooManyRequests)
 	}
