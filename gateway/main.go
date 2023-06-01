@@ -52,33 +52,25 @@ func Throttle(maxEventsPerSec int, maxBurstSize int) gin.HandlerFunc {
 			context.Next()
 			return
 		}
+		badClient := context.ClientIP()
+		redisClient.Set(redisCtx, badClient, "blocked", 100*time.Hour)
 		context.Error(errors.New("limit exceeded"))
 		context.AbortWithStatus(http.StatusTooManyRequests)
 	}
 }
 
-// func Blacklist(whitelist map[string]bool) func(http.Handler) http.Handler {
-//     f := func(h http.Handler) http.Handler {
-//         fn := func(w http.ResponseWriter, r *http.Request) {
-//             // Get IP of this request
-//             ip := doSomething()
-
-//             // If the IP isn't in the whitelist, forbid the request.
-//             if !whitelist[ip] {
-//                 w.Header().Set("Content-Type", "text/plain")
-//                 w.WriteHeader(http.StatusForbidden)
-//                 w.Write([]byte("."))
-//                 return
-//             }
-
-//             h.ServeHTTP(w, r)
-//         }
-
-//         return http.HandlerFunc(fn)
-//     }
-
-//     return f
-// }
+func Blacklist() gin.HandlerFunc {
+    return func(context *gin.Context) {
+		clientIP := context.ClientIP()
+		clientStatus, clientErr := redisClient.Get(redisCtx, clientIP).Result()
+		if clientErr == nil && clientStatus == "blocked" {
+			context.Error(errors.New("this IP will not get any service for an small amount of time"))
+			context.AbortWithStatus(http.StatusTooManyRequests)
+			return
+		}
+		context.Next()
+	}
+}
 
 func main() {
 
@@ -93,6 +85,7 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	redisClient.FlushAll(redisCtx)
 
 	authCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	authConn, authErr := grpc.DialContext(authCtx, "authentication:5052", grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -111,14 +104,14 @@ func main() {
 	bizClient := bizPb.NewBusinessClient(bizConn)
 
 	r := gin.Default()
-	// r.Use(Blacklist())
+	r.Use(Blacklist())
 
 	// Auth services
 	auth := r.Group("/auth")
+	maxEventsPerSec := 100
+	maxBurstSize := 100
+	auth.Use(Throttle(maxEventsPerSec, maxBurstSize))
 	{
-		maxEventsPerSec := 1000
-		maxBurstSize := 50
-		auth.Use(Throttle(maxEventsPerSec, maxBurstSize))
 		auth.GET("/req_pq", func(c *gin.Context) {
 			nonce := c.Query("nonce")
 			message_id, err := strconv.Atoi(c.Query("message_id"))

@@ -12,7 +12,7 @@ import (
 var wg sync.WaitGroup
 
 func MakeRequest() {
-	url := "http://localhost/biz/get_users?user_id=2&message_id=2&auth_key=2&auth_id=ABCDE01234ABCDE0123793FdrQPTRkl897Etrw7T"
+	url := "http://localhost/auth/req_pq?nonce=ABCDE01234ABCDE01237&message_id=0"
 	method := "GET"
 
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
@@ -52,8 +52,8 @@ func MakeRequest() {
 }
 
 func main() {
-	wg.Add(1000)
-	for i := 0; i < 1000; i++ {
+	wg.Add(150)
+	for i := 0; i < 150; i++ {
 		go MakeRequest()
 	}
 	wg.Wait()
