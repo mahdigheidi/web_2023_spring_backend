@@ -37,3 +37,15 @@ All services will be built and run on the specified endpoints
 ### Services' load test
 To load test the services, you should cd into the load_test directory and execute `locust`,
 then you can open `localhost:8089` and start load testing implemented services
+
+You will most likely see something like this:
+![Alt text](image.png)
+
+### Generate and review documentations
+To generate the documentation for the service gateway, which is the main endpoint for the
+system and processes RESTful requests, cd into the gateway, run `swag init`.
+Note that this command should be run after you have written annotations and comments for each endpoint and service you want documentation for.
+After that when the service is up, the swagger endpoint will be accesible on the `http://localhost/swagger/index.html`
+
+### About performing injection on PostgreSQL using a golang client
+https://www.stackhawk.com/blog/golang-sql-injection-guide-examples-and-prevention/ this link will provide some pretty useful info

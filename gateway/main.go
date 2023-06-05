@@ -30,16 +30,21 @@ func isAuthenticated() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authIdentifier := c.Query("auth_id")
 		authKey := c.Query("auth_key")
+		if authIdentifier == "" {
+			authIdentifier = c.PostForm("auth_id")
+			authKey = c.PostForm("auth_key")
+		}
 		redisSavedKey, err := redisClient.Get(redisCtx, authIdentifier).Result()
 
 		fmt.Println(authIdentifier, authKey, redisSavedKey)
 
 		if err != nil {
-			log.Fatal("error while fetching the provided auth key")
+			c.Error(errors.New("cannot provide biz services to unauthorized users"))
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
-		if redisSavedKey == authKey {
+		if  redisSavedKey == authKey {
 			c.Set("authenticated", true)
 		} else {
 			c.Set("authenticated", false)
@@ -91,6 +96,7 @@ var bizClient = bizPb.NewBusinessClient(bizConn)
 // @Schemes
 // @Description this endpoint will request the p and g parameters of the diffie-hellman
 // @Tags req_pq
+// @Params nonce message_id
 // @Accept json
 // @Produce json
 // @Success 200 {string} Diffie-Hellman params
@@ -183,9 +189,9 @@ func HandleGetUsersWithSQLInject(c *gin.Context) {
 			"message": "not authenticated",
 		})
 	} else {
-		user_id := c.Query("user_id")
-		message_id, _ := strconv.Atoi(c.Query("message_id"))
-		auth_key := c.Query("auth_key")
+		user_id := c.PostForm("user_id")
+		message_id, _ := strconv.Atoi(c.PostForm("message_id"))
+		auth_key := c.PostForm("auth_key")
 		response, err := bizClient.GetUsersWithSQLInject(context.Background(), &bizPb.GetUsersWithSQLInjectRequest{UserId: user_id, AuthKey: auth_key, MessageId: int32(message_id)})
 		c.JSON(200, gin.H{
 			"response": response,
@@ -254,7 +260,7 @@ func main() {
 	biz.Use(isAuthenticated())
 	{
 		biz.GET("/get_users", HandleGetUsers)
-		biz.GET("/get_users_with_sql_inject", HandleGetUsersWithSQLInject)
+		biz.POST("/get_users_with_sql_inject", HandleGetUsersWithSQLInject)
 	}
 
 	r.Run("0.0.0.0:6433") // listen and serve gateway service on port 6433

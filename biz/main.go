@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"net"
 
@@ -52,7 +53,22 @@ func (s *businessServer) GetUsers(ctx context.Context, req *pb.GetUsersRequest) 
 }
 
 func (s *businessServer) GetUsersWithSQLInject(ctx context.Context, req *pb.GetUsersWithSQLInjectRequest) (*pb.GetUsersResponse, error) {
-	return &pb.GetUsersResponse{}, nil
+	user_id := req.UserId
+	var rows *sql.Rows
+
+	query := fmt.Sprintf("SELECT id, name, family, age, sex, created_at FROM users WHERE id = %s", user_id)
+	rows, _ = db.Query(query)
+	pbUsers := []*pb.User{}
+	defer rows.Close()
+	for rows.Next() {
+		var user User
+
+		_ = rows.Scan(&user.id, &user.name, &user.family, &user.age, &user.sex, &user.created_at)
+
+		pbUser := &pb.User{Name: user.name, Family: user.family, Id: user.id, Age: user.age, Sex: user.sex, CreatedAt: user.created_at}
+		pbUsers = append(pbUsers, pbUser)
+	}
+	return &pb.GetUsersResponse{Users: pbUsers}, nil
 }
 
 func main() {

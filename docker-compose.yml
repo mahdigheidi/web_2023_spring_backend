@@ -29,7 +29,6 @@ services:
     build:
       context: ./gateway/
     depends_on:
-      - redis_cache
       - authentication
       - business_logic
     restart: always

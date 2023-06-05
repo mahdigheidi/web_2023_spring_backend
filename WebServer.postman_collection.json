@@ -1,0 +1,157 @@
+{
+	"info": {
+		"_postman_id": "03044429-2db1-4b60-ab7e-a53122486e6e",
+		"name": "WebServer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8219673"
+	},
+	"item": [
+		{
+			"name": "ReqPG",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost/auth/req_pq?nonce=ABCDE01234ABCDE01237&message_id=0",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"auth",
+						"req_pq"
+					],
+					"query": [
+						{
+							"key": "nonce",
+							"value": "ABCDE01234ABCDE01237"
+						},
+						{
+							"key": "message_id",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ReqDHParams",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost/auth/req_dh_params?nonce=ABCDE01234ABCDE01237&server_nonce=93FdrQPTRkl897Etrw7T&message_id=4&a=8",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"auth",
+						"req_dh_params"
+					],
+					"query": [
+						{
+							"key": "nonce",
+							"value": "ABCDE01234ABCDE01237"
+						},
+						{
+							"key": "server_nonce",
+							"value": "93FdrQPTRkl897Etrw7T"
+						},
+						{
+							"key": "message_id",
+							"value": "4"
+						},
+						{
+							"key": "a",
+							"value": "8"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUsers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost/biz/get_users?user_id=1&message_id=2&auth_key=2&auth_id=ABCDE01234ABCDE0123793FdrQPTRkl897Etrw7T",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"biz",
+						"get_users"
+					],
+					"query": [
+						{
+							"key": "user_id",
+							"value": "1"
+						},
+						{
+							"key": "message_id",
+							"value": "2"
+						},
+						{
+							"key": "auth_key",
+							"value": "2"
+						},
+						{
+							"key": "auth_id",
+							"value": "ABCDE01234ABCDE0123793FdrQPTRkl897Etrw7T"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUsersWithSQLInjection",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "'1';DROP TABLE users--",
+							"type": "text"
+						},
+						{
+							"key": "message_id",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "auth_key",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "auth_id",
+							"value": "ABCDE01234ABCDE0123793FdrQPTRkl897Etrw7T",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost/biz/get_users_with_sql_inject",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"biz",
+						"get_users_with_sql_inject"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
