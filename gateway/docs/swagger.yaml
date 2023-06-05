@@ -1,0 +1,81 @@
+basePath: /
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:6433
+info:
+  contact:
+    email: gheidimahdi@gmail.com
+    name: MohammadMahdi Gheidi
+  description: This is a simple documentation on the gateway service which is a part
+    of backend homework of WebDev course in spring 2023.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Web 2023 Backend HW - Gateway service
+  version: "1.0"
+paths:
+  /auth/req_dh_params:
+    get:
+      consumes:
+      - application/json
+      description: after receiving p/g params from req_pq, communicate the keys
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: handshake on diffie-hellman parameters between server/client
+      tags:
+      - req_dh_params
+  /auth/req_pq:
+    get:
+      consumes:
+      - application/json
+      description: this endpoint will request the p and g parameters of the diffie-hellman
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: request p/g params diffie-hellman
+      tags:
+      - req_pq
+  /biz/get_users:
+    get:
+      consumes:
+      - application/json
+      description: this endpoint will fetch the user with the id provided in the request
+        or if no id is provided will return last 100 rows of db
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: lets you do a query on db with secure functionality and no injection
+      tags:
+      - get_users
+  /biz/get_users_with_sql_injection:
+    get:
+      consumes:
+      - application/json
+      description: will not perform any security check on the input given by user
+        and will execute the query without any checks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: enables you to perform a query on the db with injection feature
+      tags:
+      - get_users_with_sql_injection
+swagger: "2.0"
