@@ -2,7 +2,7 @@ basePath: /
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
-host: localhost:6433
+host: localhost
 info:
   contact:
     email: gheidimahdi@gmail.com
@@ -21,6 +21,27 @@ paths:
       consumes:
       - application/json
       description: after receiving p/g params from req_pq, communicate the keys
+      parameters:
+      - description: id of message that will be sent to server
+        in: path
+        name: message_id
+        required: true
+        type: integer
+      - description: client's nonce
+        in: path
+        name: nonce
+        required: true
+        type: string
+      - description: server nonce that was sent to the client in the req_pg request
+        in: path
+        name: server_nonce
+        required: true
+        type: string
+      - description: the A value of the diffie-hellman
+        in: path
+        name: a
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -33,9 +54,18 @@ paths:
       - req_dh_params
   /auth/req_pq:
     get:
-      consumes:
-      - application/json
       description: this endpoint will request the p and g parameters of the diffie-hellman
+      parameters:
+      - description: id of message that will be sent to server
+        in: path
+        name: message_id
+        required: true
+        type: integer
+      - description: client's nonce
+        in: path
+        name: nonce
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -52,6 +82,22 @@ paths:
       - application/json
       description: this endpoint will fetch the user with the id provided in the request
         or if no id is provided will return last 100 rows of db
+      parameters:
+      - description: id of message that will be sent to server
+        in: path
+        name: message_id
+        required: true
+        type: integer
+      - description: id of user in the database
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: authenticated key that was calculated by both server and client
+        in: path
+        name: auth_key
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -68,6 +114,22 @@ paths:
       - application/json
       description: will not perform any security check on the input given by user
         and will execute the query without any checks
+      parameters:
+      - description: id of message that will be sent to server
+        in: path
+        name: message_id
+        required: true
+        type: integer
+      - description: id of user in the database or the dirty string which is injected
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: authenticated key that was calculated by both server and client
+        in: path
+        name: auth_key
+        required: true
+        type: string
       produces:
       - application/json
       responses:

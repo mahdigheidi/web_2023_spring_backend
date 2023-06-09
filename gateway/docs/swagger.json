@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:6433",
+    "host": "localhost",
     "basePath": "/",
     "paths": {
         "/auth/req_dh_params": {
@@ -30,6 +30,36 @@
                     "req_dh_params"
                 ],
                 "summary": "handshake on diffie-hellman parameters between server/client",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of message that will be sent to server",
+                        "name": "message_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "client's nonce",
+                        "name": "nonce",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "server nonce that was sent to the client in the req_pg request",
+                        "name": "server_nonce",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "the A value of the diffie-hellman",
+                        "name": "a",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -43,9 +73,6 @@
         "/auth/req_pq": {
             "get": {
                 "description": "this endpoint will request the p and g parameters of the diffie-hellman",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -53,6 +80,22 @@
                     "req_pq"
                 ],
                 "summary": "request p/g params diffie-hellman",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of message that will be sent to server",
+                        "name": "message_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "client's nonce",
+                        "name": "nonce",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -76,6 +119,29 @@
                     "get_users"
                 ],
                 "summary": "lets you do a query on db with secure functionality and no injection",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of message that will be sent to server",
+                        "name": "message_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id of user in the database",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "authenticated key that was calculated by both server and client",
+                        "name": "auth_key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -99,6 +165,29 @@
                     "get_users_with_sql_injection"
                 ],
                 "summary": "enables you to perform a query on the db with injection feature",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of message that will be sent to server",
+                        "name": "message_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id of user in the database or the dirty string which is injected",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "authenticated key that was calculated by both server and client",
+                        "name": "auth_key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

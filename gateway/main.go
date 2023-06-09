@@ -96,8 +96,8 @@ var bizClient = bizPb.NewBusinessClient(bizConn)
 // @Schemes
 // @Description this endpoint will request the p and g parameters of the diffie-hellman
 // @Tags req_pq
-// @Params nonce message_id
-// @Accept json
+// @Param message_id path int true "id of message that will be sent to server"
+// @Param nonce path string true "client's nonce"
 // @Produce json
 // @Success 200 {string} Diffie-Hellman params
 // @Router /auth/req_pq [get]
@@ -122,6 +122,10 @@ func HandleReqPQ(c *gin.Context) {
 // @Schemes
 // @Description after receiving p/g params from req_pq, communicate the keys
 // @Tags req_dh_params
+// @Param message_id path int true "id of message that will be sent to server"
+// @Param nonce path string true "client's nonce"
+// @Param server_nonce path string true "server nonce that was sent to the client in the req_pg request"
+// @Param a path int true "the A value of the diffie-hellman"
 // @Accept json
 // @Produce json
 // @Success 200 {string} Handshake on diffie-hellman keys
@@ -151,6 +155,9 @@ func HandleReqDHParams(c *gin.Context) {
 // @Schemes
 // @Description this endpoint will fetch the user with the id provided in the request or if no id is provided will return last 100 rows of db
 // @Tags get_users
+// @Param message_id path int true "id of message that will be sent to server"
+// @Param user_id path int true "id of user in the database"
+// @Param auth_key path string true "authenticated key that was calculated by both server and client"
 // @Accept json
 // @Produce json
 // @Success 200 {string} Helloworld
@@ -179,6 +186,9 @@ func HandleGetUsers(c *gin.Context) {
 // @Schemes
 // @Description will not perform any security check on the input given by user and will execute the query without any checks
 // @Tags get_users_with_sql_injection
+// @Param message_id path int true "id of message that will be sent to server"
+// @Param user_id path int true "id of user in the database or the dirty string which is injected"
+// @Param auth_key path string true "authenticated key that was calculated by both server and client"
 // @Accept json
 // @Produce json
 // @Success 200 {string} Helloworld
@@ -211,7 +221,7 @@ func HandleGetUsersWithSQLInject(c *gin.Context) {
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:6433
+// @host      localhost
 // @BasePath  /
 
 // @externalDocs.description  OpenAPI

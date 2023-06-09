@@ -37,6 +37,36 @@ const docTemplate = `{
                     "req_dh_params"
                 ],
                 "summary": "handshake on diffie-hellman parameters between server/client",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of message that will be sent to server",
+                        "name": "message_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "client's nonce",
+                        "name": "nonce",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "server nonce that was sent to the client in the req_pg request",
+                        "name": "server_nonce",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "the A value of the diffie-hellman",
+                        "name": "a",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -50,9 +80,6 @@ const docTemplate = `{
         "/auth/req_pq": {
             "get": {
                 "description": "this endpoint will request the p and g parameters of the diffie-hellman",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -60,6 +87,22 @@ const docTemplate = `{
                     "req_pq"
                 ],
                 "summary": "request p/g params diffie-hellman",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of message that will be sent to server",
+                        "name": "message_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "client's nonce",
+                        "name": "nonce",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -83,6 +126,29 @@ const docTemplate = `{
                     "get_users"
                 ],
                 "summary": "lets you do a query on db with secure functionality and no injection",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of message that will be sent to server",
+                        "name": "message_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id of user in the database",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "authenticated key that was calculated by both server and client",
+                        "name": "auth_key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -106,6 +172,29 @@ const docTemplate = `{
                     "get_users_with_sql_injection"
                 ],
                 "summary": "enables you to perform a query on the db with injection feature",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of message that will be sent to server",
+                        "name": "message_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id of user in the database or the dirty string which is injected",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "authenticated key that was calculated by both server and client",
+                        "name": "auth_key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -126,7 +215,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:6433",
+	Host:             "localhost",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Web 2023 Backend HW - Gateway service",
